@@ -9,7 +9,7 @@ import type {
 } from "@/lib/types";
 
 type RawConsultation = Omit<Consultation, "avocats"> & {
-  avocats: Array<Pick<Avocat, "id" | "nom" | "specialite">> | null;
+  avocats: Pick<Avocat, "id" | "nom" | "specialite"> | null;
 };
 
 export async function getCurrentUser() {
@@ -76,7 +76,7 @@ async function getConsultationsForUserWithClient(
 
   return rows.map((row) => ({
     ...row,
-    avocats: row.avocats?.[0] ?? null,
+    avocats: row.avocats,
   }));
 }
 

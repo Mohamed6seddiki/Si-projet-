@@ -1,4 +1,5 @@
 import { AuthPanel } from "@/components/auth/auth-panel";
+import { getSafeRedirectPath } from "@/lib/auth/redirect";
 
 type LoginPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -6,11 +7,15 @@ type LoginPageProps = {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const query = await searchParams;
+  const errorParam = query.error;
   const nextParam = query.next;
-  const nextPath =
-    typeof nextParam === "string" && nextParam.startsWith("/")
-      ? nextParam
-      : "/dashboard";
+  const nextPath = getSafeRedirectPath(
+    typeof nextParam === "string" ? nextParam : undefined,
+  );
+  const callbackError =
+    typeof errorParam === "string" && errorParam === "callback_failed"
+      ? errorParam
+      : undefined;
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10 sm:px-8">
@@ -50,7 +55,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </section>
 
         <section className="flex items-center justify-center">
-          <AuthPanel nextPath={nextPath} />
+          <AuthPanel callbackError={callbackError} nextPath={nextPath} />
         </section>
       </div>
     </main>

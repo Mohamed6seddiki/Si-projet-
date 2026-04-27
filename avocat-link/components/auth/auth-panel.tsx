@@ -13,7 +13,12 @@ type AuthState = {
 
 const initialState: AuthState = {};
 
-export function AuthPanel({ nextPath }: { nextPath: string }) {
+type AuthPanelProps = {
+  callbackError?: string;
+  nextPath: string;
+};
+
+export function AuthPanel({ callbackError, nextPath }: AuthPanelProps) {
   const [mode, setMode] = useState<Mode>("signin");
   const [signInState, signInFormAction, signInPending] = useActionState(
     signInAction,
@@ -59,6 +64,13 @@ export function AuthPanel({ nextPath }: { nextPath: string }) {
         className="space-y-5"
       >
         <input type="hidden" name="next" value={nextPath} />
+
+        {callbackError ? (
+          <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-[var(--error)]">
+            Le lien de confirmation est invalide ou a expire. Reessayez depuis votre
+            boite mail.
+          </p>
+        ) : null}
 
         <div className="space-y-2">
           <label htmlFor="email" className="block text-sm font-medium text-slate-700">
@@ -117,6 +129,12 @@ export function AuthPanel({ nextPath }: { nextPath: string }) {
               ? "Se connecter"
               : "Creer un compte"}
         </button>
+
+        {mode === "signup" ? (
+          <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            Apres inscription, confirmez votre email pour activer votre compte.
+          </p>
+        ) : null}
       </form>
 
       <p className="mt-6 text-xs leading-relaxed text-slate-600">

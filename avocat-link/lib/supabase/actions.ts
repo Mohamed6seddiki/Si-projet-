@@ -3,6 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import {
+  createAuthCallbackUrl,
+  getSafeRedirectPath,
+} from "@/lib/auth/redirect";
 import { CONSULTATION_BUCKET } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 
@@ -44,10 +48,16 @@ export async function signInAction(
     return { error: "Veuillez fournir un email et un mot de passe valides." };
   }
 
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!normalizedEmail || !password) {
+    return { error: "Veuillez fournir un email et un mot de passe valides." };
+  }
+
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
-    email,
+    email: normalizedEmail,
     password,
   });
 
@@ -57,11 +67,11 @@ export async function signInAction(
 
   revalidatePath("/dashboard");
 
-  if (typeof nextPath === "string" && nextPath.startsWith("/")) {
-    redirect(nextPath);
-  }
+  const redirectPath = getSafeRedirectPath(
+    typeof nextPath === "string" ? nextPath : undefined,
+  );
 
-  redirect("/dashboard");
+  redirect(redirectPath);
 }
 
 export async function signUpAction(
@@ -70,8 +80,15 @@ export async function signUpAction(
 ): Promise<ActionResult> {
   const email = formData.get("email");
   const password = formData.get("password");
+  const nextPath = formData.get("next");
 
   if (typeof email !== "string" || typeof password !== "string") {
+    return { error: "Veuillez fournir un email et un mot de passe valides." };
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!normalizedEmail) {
     return { error: "Veuillez fournir un email et un mot de passe valides." };
   }
 
@@ -81,11 +98,15 @@ export async function signUpAction(
 
   const supabase = await createClient();
 
+  const redirectPath = getSafeRedirectPath(
+    typeof nextPath === "string" ? nextPath : undefined,
+  );
+
   const { error } = await supabase.auth.signUp({
-    email,
+    email: normalizedEmail,
     password,
     options: {
-      emailRedirectTo: `${getBaseUrl()}/auth/callback`,
+      emailRedirectTo: createAuthCallbackUrl(getBaseUrl(), redirectPath),
     },
   });
 
