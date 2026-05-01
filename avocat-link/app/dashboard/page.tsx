@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-
 import { AvocatsGrid } from "@/components/dashboard/avocats-grid";
 import { ConsultationsTable } from "@/components/dashboard/consultations-table";
 import { CreateConsultationForm } from "@/components/dashboard/create-consultation-form";
@@ -14,7 +12,7 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    return null;
   }
 
   const [avocats, consultations] = await Promise.all([
