@@ -4,9 +4,6 @@ import { getAvocats, getCurrentUser } from "@/lib/supabase/queries";
 
 export default async function AvocatsListPage() {
   const user = await getCurrentUser();
-  if (!user) {
-    return null;
-  }
 
   const avocats = await getAvocats();
 
@@ -20,6 +17,11 @@ export default async function AvocatsListPage() {
           <p className="mt-1 text-sm text-slate-600">
             Cliquez sur une fiche pour voir le détail et lancer une réservation.
           </p>
+          {!user ? (
+            <p className="mt-2 text-sm font-medium text-[var(--accent-strong)]">
+              Mode visiteur actif: vous pouvez consulter le projet sans créer de compte.
+            </p>
+          ) : null}
         </div>
         <AvocatsGrid avocats={avocats} />
       </div>

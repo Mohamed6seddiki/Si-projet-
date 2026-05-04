@@ -1,4 +1,7 @@
+"use client";
+
 import { StatusBadge } from "@/components/ui/status-badge";
+import { DeleteConsultationButton } from "@/components/dashboard/delete-consultation-button";
 import type { ConsultationWithDocument } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils";
 
@@ -50,6 +53,7 @@ export function ConsultationsTable({ consultations }: Props) {
               <th className="px-4 py-3 font-semibold">Date</th>
               <th className="px-4 py-3 font-semibold">Statut</th>
               <th className="px-4 py-3 font-semibold">Document</th>
+              <th className="px-4 py-3 font-semibold text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -81,6 +85,9 @@ export function ConsultationsTable({ consultations }: Props) {
                     <span className="text-slate-400">Indisponible</span>
                   )}
                 </td>
+                <td className="px-4 py-3 text-right">
+                  <DeleteConsultationButton consultationId={consultation.id} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -106,19 +113,22 @@ export function ConsultationsTable({ consultations }: Props) {
               </span>
             </div>
 
-            <div>
-              {consultation.document_url ? (
-                <a
-                  href={consultation.document_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-sm font-semibold text-[var(--secondary)] underline-offset-4 hover:underline"
-                >
-                  Ouvrir PDF
-                </a>
-              ) : (
-                <span className="text-xs text-slate-400">Document indisponible</span>
-              )}
+            <div className="space-y-2">
+              <div>
+                {consultation.document_url ? (
+                  <a
+                    href={consultation.document_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm font-semibold text-[var(--secondary)] underline-offset-4 hover:underline"
+                  >
+                    Ouvrir PDF
+                  </a>
+                ) : (
+                  <span className="text-xs text-slate-400">Document indisponible</span>
+                )}
+              </div>
+              <DeleteConsultationButton consultationId={consultation.id} />
             </div>
           </li>
         ))}

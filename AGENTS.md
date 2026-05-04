@@ -26,7 +26,7 @@ The app connects clients with lawyers and lets authenticated users create and tr
    - View lawyers list
    - Create consultation (lawyer + date/time + PDF upload)
    - View personal consultation status list
-10. Ensure responsive UI for desktop and mobile.
+10. Ensure responsive UI for desktop .
 11. Run lint/build checks and prepare Vercel deployment settings.
 
 ## Database Design

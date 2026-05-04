@@ -8,14 +8,11 @@ type PageProps = {
 
 export default async function ReservationsPage({ searchParams }: PageProps) {
   const user = await getCurrentUser();
-  if (!user) {
-    return null;
-  }
 
   const query = await searchParams;
   const avocatParam = typeof query.avocat === "string" ? query.avocat.trim() : "";
 
-  const avocats = await getAvocats();
+  const avocats = user ? await getAvocats() : [];
   const initialAvocatId =
     avocatParam && avocats.some((a) => a.id === avocatParam) ? avocatParam : null;
 
@@ -31,11 +28,21 @@ export default async function ReservationsPage({ searchParams }: PageProps) {
             la consultation.
           </p>
         </div>
-        <BookingWorkflow
-          key={initialAvocatId ?? "none"}
-          avocats={avocats}
-          initialAvocatId={initialAvocatId}
-        />
+        {user ? (
+          <BookingWorkflow
+            key={initialAvocatId ?? "none"}
+            avocats={avocats}
+            initialAvocatId={initialAvocatId}
+          />
+        ) : (
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-semibold text-[var(--primary)]">Mode aperçu</p>
+            <p className="mt-2 text-sm text-slate-600">
+              Vous pouvez parcourir le projet sans compte. La création réelle d&apos;une consultation
+              est réservée aux utilisateurs connectés.
+            </p>
+          </div>
+        )}
       </div>
       <DashboardFooter />
     </div>

@@ -10,6 +10,7 @@ import type {
 
 type RawConsultation = Omit<Consultation, "avocats"> & {
   avocats: Pick<Avocat, "id" | "nom" | "specialite" | "avatar_url"> | null;
+  clients: Pick<import("@/lib/types").Client, "id" | "nom"> | null;
 };
 
 export async function getCurrentUser() {
@@ -17,6 +18,16 @@ export async function getCurrentUser() {
   const { data, error } = await supabase.auth.getUser();
 
   if (error) {
+    const normalizedMessage = error.message.trim().toLowerCase();
+
+    if (
+      normalizedMessage.includes("auth session missing") ||
+      normalizedMessage.includes("session missing") ||
+      normalizedMessage.includes("auth session not found")
+    ) {
+      return null;
+    }
+
     throw new Error(error.message);
   }
 
@@ -28,7 +39,7 @@ export async function getAvocats() {
 
   const { data, error } = await supabase
     .from("avocats")
-    .select("id, nom, specialite, avatar_url, created_at")
+    .select("id, user_id, nom, specialite, avatar_url, created_at")
     .order("nom", { ascending: true });
 
   if (error) {
@@ -43,7 +54,7 @@ export async function getAvocatById(id: string) {
 
   const { data, error } = await supabase
     .from("avocats")
-    .select("id, nom, specialite, avatar_url, created_at")
+    .select("id, user_id, nom, specialite, avatar_url, created_at")
     .eq("id", id)
     .maybeSingle();
 
@@ -79,7 +90,7 @@ async function getConsultationsForUserWithClient(
   const { data, error } = await supabase
     .from("consultations")
     .select(
-      "id, client_id, avocat_id, date_consultation, status, fichier_url, created_at, avocats(id, nom, specialite, avatar_url)",
+      "id, client_id, avocat_id, date_consultation, status, fichier_url, created_at, avocats(id, nom, specialite, avatar_url), clients(id, nom)",
     )
     .eq("client_id", user.id)
     .order("created_at", { ascending: false });
@@ -93,6 +104,7 @@ async function getConsultationsForUserWithClient(
   return rows.map((row) => ({
     ...row,
     avocats: row.avocats,
+    client: row.clients,
   }));
 }
 
@@ -132,8 +144,8 @@ export async function getLawyerProfile() {
   }
 
   const { data, error } = await supabase
-    .from("lawyer_profiles")
-    .select("user_id, nom, specialite, avatar_url, created_at")
+    .from("avocats")
+    .select("id, user_id, nom, specialite, avatar_url, created_at")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -141,7 +153,7 @@ export async function getLawyerProfile() {
     throw new Error(error.message);
   }
 
-  return data as import("@/lib/types").LawyerProfile | null;
+  return data as import("@/lib/types").Avocat | null;
 }
 
 export async function getConsultationsForLawyer() {
@@ -162,7 +174,7 @@ export async function getConsultationsForLawyer() {
   const { data, error } = await supabase
     .from("consultations")
     .select(
-      "id, client_id, avocat_id, avocat_user_id, date_consultation, status, fichier_url, created_at",
+      "id, client_id, avocat_id, avocat_user_id, date_consultation, status, fichier_url, created_at, clients(id, nom)",
     )
     .eq("avocat_user_id", user.id)
     .order("date_consultation", { ascending: true });
@@ -171,5 +183,5 @@ export async function getConsultationsForLawyer() {
     throw new Error(error.message);
   }
 
-  return (data ?? []) as Consultation[];
+  return (data ?? []) as (Consultation & { client?: { id: string; nom: string } | null })[];
 }

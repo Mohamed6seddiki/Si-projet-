@@ -38,24 +38,36 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isAuthPath = path === "/login" || path === "/auth/forgot-password";
-  const isProtectedPath = path.startsWith("/dashboard");
-
-  if (!user && isProtectedPath) {
-    const redirectUrl = request.nextUrl.clone();
-    const nextPath = `${path}${request.nextUrl.search}`;
-
-    redirectUrl.pathname = "/login";
-    redirectUrl.search = "";
-    redirectUrl.searchParams.set("next", nextPath);
-    return NextResponse.redirect(redirectUrl);
-  }
-
   if (user && isAuthPath) {
     const redirectUrl = request.nextUrl.clone();
     const role = user.user_metadata?.role;
-    redirectUrl.pathname = role === "lawyer" ? "/dashboard/avocat" : "/dashboard/reservations";
+    redirectUrl.pathname = role === "avocat" || role === "lawyer"
+      ? "/dashboard/avocat"
+      : "/dashboard/reservations";
     redirectUrl.search = "";
     return NextResponse.redirect(redirectUrl);
+  }
+
+  if (path.startsWith("/dashboard")) {
+    if (!user) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/login";
+      redirectUrl.searchParams.set(
+        "next",
+        `${path}${request.nextUrl.search}`,
+      );
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    if (path.startsWith("/dashboard/avocat")) {
+      const role = user.user_metadata?.role;
+      if (role !== "avocat" && role !== "lawyer") {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = "/dashboard/reservations";
+        redirectUrl.search = "";
+        return NextResponse.redirect(redirectUrl);
+      }
+    }
   }
 
   return response;

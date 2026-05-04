@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useActionState, useId, useState } from "react";
 
-import { GoogleOAuthButton } from "@/components/auth/google-oauth-button";
 import { signInAction, signUpAction } from "@/lib/supabase/actions";
 
 type ActionState = {
@@ -20,7 +19,7 @@ type Props = {
 
 function LogoMark() {
   return (
-    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)] shadow-md">
+    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-(--primary) shadow-md">
       <svg className="h-7 w-7 text-white" viewBox="0 0 24 24" fill="none" aria-hidden>
         <path
           d="M12 3L4 7v6c0 4.5 3 8.5 8 10 5-1.5 8-5.5 8-10V7l-8-4z"
@@ -71,7 +70,7 @@ function SignInFields({
             placeholder="nom@cabinet.com"
             required
             disabled={pending}
-            className="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-[var(--accent-strong)] focus:ring-2 focus:ring-[var(--accent)]"
+            className="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-(--accent-strong) focus:ring-2 focus:ring-(--accent)"
           />
         </div>
       </div>
@@ -83,7 +82,7 @@ function SignInFields({
           </label>
           <Link
             href="/auth/forgot-password"
-            className="text-xs font-semibold text-[var(--accent-strong)] hover:underline"
+            className="text-xs font-semibold text-(--accent-strong) hover:underline"
           >
             Mot de passe oublié&nbsp;?
           </Link>
@@ -107,7 +106,7 @@ function SignInFields({
             placeholder="••••••••"
             required
             disabled={pending}
-            className="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm outline-none transition focus:border-[var(--accent-strong)] focus:ring-2 focus:ring-[var(--accent)]"
+            className="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm outline-none transition focus:border-(--accent-strong) focus:ring-2 focus:ring-(--accent)"
           />
         </div>
       </div>
@@ -116,7 +115,7 @@ function SignInFields({
 }
 
 function SignUpFields({ pending, nextPath }: { pending: boolean; nextPath: string }) {
-  const [role, setRole] = useState<"client" | "lawyer">("client");
+  const [role, setRole] = useState<"client" | "avocat">("client");
   const [showPw, setShowPw] = useState(false);
   const emailId = useId();
   const passwordId = useId();
@@ -136,7 +135,7 @@ function SignUpFields({ pending, nextPath }: { pending: boolean; nextPath: strin
             className={[
               "flex items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition",
               role === "client"
-                ? "border-[var(--accent-strong)] bg-[var(--accent)] text-[var(--primary)]"
+                ? "border-(--accent-strong) bg-(--accent) text-(--primary)"
                 : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
             ].join(" ")}
             aria-pressed={role === "client"}
@@ -149,14 +148,14 @@ function SignUpFields({ pending, nextPath }: { pending: boolean; nextPath: strin
           </button>
           <button
             type="button"
-            onClick={() => setRole("lawyer")}
+            onClick={() => setRole("avocat")}
             className={[
               "flex items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition",
-              role === "lawyer"
+              role === "avocat"
                 ? "border-[var(--accent-strong)] bg-[var(--accent)] text-[var(--primary)]"
                 : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
             ].join(" ")}
-            aria-pressed={role === "lawyer"}
+            aria-pressed={role === "avocat"}
             aria-label="Créer un compte avocat"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
@@ -175,7 +174,7 @@ function SignUpFields({ pending, nextPath }: { pending: boolean; nextPath: strin
           autoComplete="name"
           placeholder="Jean Dupont"
           disabled={pending}
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm outline-none transition focus:border-[var(--accent-strong)] focus:ring-2 focus:ring-[var(--accent)]"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm outline-none transition focus:border-(--accent-strong) focus:ring-2 focus:ring-(--accent)"
         />
       </div>
 
@@ -191,7 +190,7 @@ function SignUpFields({ pending, nextPath }: { pending: boolean; nextPath: strin
           placeholder="nom@cabinet.com"
           required
           disabled={pending}
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm outline-none transition focus:border-[var(--accent-strong)] focus:ring-2 focus:ring-[var(--accent)]"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm outline-none transition focus:border-(--accent-strong) focus:ring-2 focus:ring-(--accent)"
         />
       </div>
 
@@ -208,7 +207,7 @@ function SignUpFields({ pending, nextPath }: { pending: boolean; nextPath: strin
             placeholder="8 caractères minimum"
             required
             disabled={pending}
-            className="w-full rounded-lg border border-slate-200 bg-white py-3 pl-3 pr-12 text-sm outline-none transition focus:border-[var(--accent-strong)] focus:ring-2 focus:ring-[var(--accent)]"
+            className="w-full rounded-lg border border-slate-200 bg-white py-3 pl-3 pr-12 text-sm outline-none transition focus:border-(--accent-strong) focus:ring-2 focus:ring-(--accent)"
           />
           <button
             type="button"
@@ -242,15 +241,15 @@ function SignUpFields({ pending, nextPath }: { pending: boolean; nextPath: strin
           id={termsId}
           type="checkbox"
           required
-            className="mt-1 h-4 w-4 rounded border-slate-300 text-[var(--primary)] focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
+            className="mt-1 h-4 w-4 rounded border-slate-300 text-(--primary) focus:ring-2 focus:ring-(--accent) focus:ring-offset-2"
         />
         <label htmlFor={termsId} className="text-sm text-slate-600">
           J&apos;accepte les{" "}
-          <Link href="/legal/terms" className="font-semibold text-[var(--accent-strong)] hover:underline">
+          <Link href="/legal/terms" className="font-semibold text-(--accent-strong) hover:underline">
             conditions d&apos;utilisation
           </Link>{" "}
           et la{" "}
-          <Link href="/legal/privacy" className="font-semibold text-[var(--accent-strong)] hover:underline">
+          <Link href="/legal/privacy" className="font-semibold text-(--accent-strong) hover:underline">
             politique de confidentialité
           </Link>
           .
@@ -279,7 +278,7 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
       <div className="flex flex-col items-center px-4 py-10 sm:py-14">
         <div className="flex flex-col items-center text-center">
           <LogoMark />
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-[var(--primary)]">
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-(--primary)">
             Avocat-Link
           </h1>
           <p className="mt-1 max-w-md text-sm text-slate-600">
@@ -288,7 +287,7 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
         </div>
 
         <div className="mt-8 w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/50">
-          <h2 className="text-xl font-bold text-[var(--primary)]">Bon retour</h2>
+          <h2 className="text-xl font-bold text-(--primary)">Bon retour</h2>
           <p className="mt-1 text-sm text-slate-600">
             Saisissez vos identifiants pour vous connecter.
           </p>
@@ -303,7 +302,7 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
             <SignInFields pending={pending} nextPath={nextPath} />
 
             {state.error ? (
-              <p role="alert" className="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-[var(--error)]">
+              <p role="alert" className="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-(--error)">
                 {state.error}
               </p>
             ) : null}
@@ -311,29 +310,18 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
             <button
               type="submit"
               disabled={pending}
-              className="w-full rounded-lg bg-[var(--primary)] py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-lg bg-(--primary) py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {pending ? "Connexion…" : "Se connecter"}
             </button>
           </form>
-
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-slate-200" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Ou continuer avec
-              </span>
-              <div className="h-px flex-1 bg-slate-200" />
-            </div>
-            <GoogleOAuthButton nextPath={nextPath} disabled={pending} />
-          </div>
 
           <p className="mt-8 text-center text-sm text-slate-600">
             Pas encore de compte ?{" "}
             <button
               type="button"
               onClick={() => setMode("signup")}
-              className="font-semibold text-[var(--accent-strong)] hover:underline"
+              className="font-semibold text-(--accent-strong) hover:underline"
             >
               Créer un compte
             </button>
@@ -345,7 +333,7 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
 
   return (
     <div className="grid min-h-[min(100vh,900px)] lg:min-h-screen lg:grid-cols-2">
-      <div className="hidden lg:flex relative flex-col bg-[var(--primary)] p-8 text-white lg:p-12">
+      <div className="hidden lg:flex relative flex-col bg-(--primary) p-8 text-white lg:p-12">
         <div>
           <div className="flex items-center gap-3">
             <LogoMark />
@@ -400,7 +388,7 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
 
       <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-14">
         <div className="mx-auto w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl">
-          <h2 className="text-2xl font-bold text-[var(--primary)]">Créer un compte</h2>
+          <h2 className="text-2xl font-bold text-(--primary)">Créer un compte</h2>
           <p className="mt-1 text-sm text-slate-600">Rejoignez le futur de la consultation juridique.</p>
 
           {callbackError ? (
@@ -413,7 +401,7 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
             <SignUpFields pending={pending} nextPath={nextPath} />
 
             {state.error ? (
-              <p role="alert" className="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-[var(--error)]">
+              <p role="alert" className="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-(--error)">
                 {state.error}
               </p>
             ) : null}
@@ -427,7 +415,7 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
             <button
               type="submit"
               disabled={pending}
-              className="w-full rounded-lg bg-[var(--primary)] py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--secondary)] focus-visible:ring-offset-2"
+              className="w-full rounded-lg bg-(--primary) py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-(--secondary) focus-visible:ring-offset-2"
             >
               {pending ? "Création…" : "Créer mon compte"}
             </button>
@@ -435,23 +423,12 @@ export function AuthPanel({ nextPath, callbackError }: Props) {
             <p className="mt-2 text-xs text-slate-500">Vous recevrez un e-mail de confirmation pour activer votre compte.</p>
           </form>
 
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-slate-200" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Ou continuer avec
-              </span>
-              <div className="h-px flex-1 bg-slate-200" />
-            </div>
-            <GoogleOAuthButton nextPath={nextPath} disabled={pending} />
-          </div>
-
           <p className="mt-8 text-center text-sm text-slate-600">
             Déjà un compte ? {" "}
             <button
               type="button"
               onClick={() => setMode("signin")}
-              className="font-semibold text-[var(--accent-strong)] hover:underline"
+              className="font-semibold text-(--accent-strong) hover:underline"
             >
               Se connecter
             </button>

@@ -5,6 +5,13 @@ export type Avocat = {
   nom: string;
   specialite: string;
   avatar_url: string | null;
+  user_id?: string | null;
+  created_at: string;
+};
+
+export type Client = {
+  id: string;
+  nom: string;
   created_at: string;
 };
 
@@ -18,6 +25,7 @@ export type Consultation = {
   fichier_url: string;
   created_at: string;
   avocats?: Pick<Avocat, "id" | "nom" | "specialite" | "avatar_url"> | null;
+  client?: Pick<Client, "id" | "nom"> | null;
 };
 
 export type LawyerProfile = {

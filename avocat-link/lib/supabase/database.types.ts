@@ -8,6 +8,7 @@ export type Database = {
           id: string;
           nom: string;
           specialite: string;
+          user_id: string | null;
         };
         Insert: {
           avatar_url?: string | null;
@@ -15,6 +16,7 @@ export type Database = {
           id?: string;
           nom: string;
           specialite: string;
+          user_id?: string | null;
         };
         Update: {
           avatar_url?: string | null;
@@ -22,6 +24,25 @@ export type Database = {
           id?: string;
           nom?: string;
           specialite?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      clients: {
+        Row: {
+          created_at: string;
+          id: string;
+          nom: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          nom: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          nom?: string;
         };
         Relationships: [];
       };
@@ -69,37 +90,12 @@ export type Database = {
             foreignKeyName: "consultations_client_id_fkey";
             isOneToOne: false;
             referencedColumns: ["id"];
-            referencedRelation: "users";
+            referencedRelation: "clients";
           },
-        ];
-      };
-      lawyer_profiles: {
-        Row: {
-          avatar_url: string | null;
-          created_at: string;
-          nom: string;
-          specialite: string | null;
-          user_id: string;
-        };
-        Insert: {
-          avatar_url?: string | null;
-          created_at?: string;
-          nom: string;
-          specialite?: string | null;
-          user_id: string;
-        };
-        Update: {
-          avatar_url?: string | null;
-          created_at?: string;
-          nom?: string;
-          specialite?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
           {
-            columns: ["user_id"];
-            foreignKeyName: "lawyer_profiles_user_id_fkey";
-            isOneToOne: true;
+            columns: ["avocat_user_id"];
+            foreignKeyName: "consultations_avocat_user_id_fkey";
+            isOneToOne: false;
             referencedColumns: ["id"];
             referencedRelation: "users";
           },

@@ -11,9 +11,6 @@ type PageProps = {
 
 export default async function AvocatDetailPage({ params }: PageProps) {
   const user = await getCurrentUser();
-  if (!user) {
-    return null;
-  }
 
   const { id } = await params;
   const avocat = await getAvocatById(id);
@@ -31,13 +28,13 @@ export default async function AvocatDetailPage({ params }: PageProps) {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <Link
           href="/dashboard/avocats"
-          className="text-sm font-semibold text-[var(--accent-strong)] hover:underline"
+          className="text-sm font-semibold text-(--accent-strong) hover:underline"
         >
           ← Retour à l&apos;annuaire
         </Link>
 
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="relative h-20 w-20 overflow-hidden rounded-3xl bg-[var(--surface-muted)]">
+          <div className="relative h-20 w-20 overflow-hidden rounded-3xl bg-(--surface-muted)">
             {avocat.avatar_url && avocat.avatar_url.startsWith("/") ? (
               <Image
                 src={avocat.avatar_url}
@@ -53,14 +50,14 @@ export default async function AvocatDetailPage({ params }: PageProps) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-[var(--primary)]">
+              <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-(--primary)">
                 {avocat.nom.slice(0, 1)}
               </div>
             )}
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-[var(--primary)]">{avocat.nom}</h1>
-            <p className="mt-2 inline-flex rounded-full bg-[var(--secondary-soft)] px-3 py-1 text-sm font-semibold text-[var(--secondary)]">
+            <h1 className="text-3xl font-bold text-(--primary)">{avocat.nom}</h1>
+            <p className="mt-2 inline-flex rounded-full bg-(--secondary-soft) px-3 py-1 text-sm font-semibold text-(--secondary)">
               {avocat.specialite}
             </p>
           </div>
@@ -72,15 +69,15 @@ export default async function AvocatDetailPage({ params }: PageProps) {
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link
             href={`/dashboard/reservations?avocat=${encodeURIComponent(avocat.id)}`}
-            className="inline-flex items-center justify-center rounded-xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95"
+            className="inline-flex items-center justify-center rounded-xl bg-(--primary) px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95"
           >
-            Réserver une consultation
+            {user ? "Réserver une consultation" : "Voir l’aperçu de réservation"}
           </Link>
           <Link
             href="/dashboard/historique"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-[var(--primary)] shadow-sm transition hover:bg-slate-50"
+            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-(--primary) shadow-sm transition hover:bg-slate-50"
           >
-            Voir mon historique
+            {user ? "Voir mon historique" : "Voir l’aperçu du suivi"}
           </Link>
         </div>
       </div>

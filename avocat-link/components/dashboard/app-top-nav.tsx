@@ -33,11 +33,11 @@ export function AppTopNav({ userEmail }: Props) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-white/80">
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md supports-backdrop-filter:bg-white/80">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <Link
             href="/dashboard/reservations"
-            className="shrink-0 text-lg font-bold tracking-tight text-[var(--primary)]"
+            className="shrink-0 text-lg font-bold tracking-tight text-(--primary)"
           >
             Avocat-Link
           </Link>
@@ -49,9 +49,6 @@ export function AppTopNav({ userEmail }: Props) {
             >
               <Link href="/dashboard/avocat" className={navClass(isAvocatSpace)}>
                 Consultations
-              </Link>
-              <Link href="/dashboard/avocat/profil" className={navClass(pathname === "/dashboard/avocat/profil")}>
-                Profil
               </Link>
               <Link href="/dashboard/reservations" className={navClass(pathname === "/dashboard/reservations")}>
                 Réserver
@@ -96,7 +93,7 @@ export function AppTopNav({ userEmail }: Props) {
               </svg>
             </button>
             <div
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-sm font-bold text-[var(--primary)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-(--accent) text-sm font-bold text-(--primary)"
               title={userEmail}
             >
               {initial}
@@ -113,12 +110,6 @@ export function AppTopNav({ userEmail }: Props) {
           >
             <Link href="/dashboard/avocat" className={mobileClass(isAvocatSpace)}>
               Consultations
-            </Link>
-            <Link
-              href="/dashboard/avocat/profil"
-              className={mobileClass(pathname === "/dashboard/avocat/profil")}
-            >
-              Profil
             </Link>
             <Link
               href="/dashboard/reservations"

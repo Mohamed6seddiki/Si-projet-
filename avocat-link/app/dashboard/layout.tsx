@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-
 import { AppTopNav } from "@/components/dashboard/app-top-nav";
 import { getCurrentUser } from "@/lib/supabase/queries";
 
@@ -9,25 +7,22 @@ type DashboardLayoutProps = {
 
 export default async function DashboardLayout({ children }: DashboardLayoutProps) {
   const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login?next=/dashboard/reservations");
-  }
+  const userEmail = user?.email ?? "Visiteur";
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[var(--background)]">
+    <div className="relative min-h-screen overflow-x-hidden bg-background">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_0%,rgba(37,99,235,0.06)_0%,transparent_50%),radial-gradient(circle_at_100%_10%,rgba(15,23,42,0.04)_0%,transparent_45%)]"
       />
       <a
         href="#dashboard-main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--primary)] focus:shadow-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-(--primary) focus:shadow-lg"
       >
         Aller au contenu
       </a>
 
-      <AppTopNav userEmail={user.email ?? ""} />
+      <AppTopNav userEmail={userEmail} />
 
       <main
         id="dashboard-main"

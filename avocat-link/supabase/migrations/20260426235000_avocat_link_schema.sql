@@ -2,11 +2,15 @@ create extension if not exists "pgcrypto";
 
 create table if not exists public.avocats (
   id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id),
   nom text not null,
   specialite text not null,
   avatar_url text,
   created_at timestamptz not null default now()
 );
+
+create unique index if not exists avocats_user_id_idx
+  on public.avocats (user_id);
 
 create table if not exists public.consultations (
   id uuid primary key default gen_random_uuid(),
