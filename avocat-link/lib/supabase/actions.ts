@@ -7,7 +7,7 @@ import {
   createAuthCallbackUrl,
   getSafeRedirectPath,
 } from "@/lib/auth/redirect";
-import { CONSULTATION_BUCKET } from "@/lib/constants";
+import { CONSULTATION_BUCKET, MAX_CONSULTATION_PDF_BYTES } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 
 type ActionResult = {
@@ -45,18 +45,18 @@ export async function signInAction(
   const nextPath = formData.get("next");
 
   if (typeof email !== "string" || typeof password !== "string") {
-    return { error: "Veuillez fournir un email et un mot de passe valides." };
+    return { error: "Veuillez fournir un e-mail et un mot de passe valides." };
   }
 
   const normalizedEmail = email.trim().toLowerCase();
 
   if (!normalizedEmail || !password) {
-    return { error: "Veuillez fournir un email et un mot de passe valides." };
+    return { error: "Veuillez fournir un e-mail et un mot de passe valides." };
   }
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: normalizedEmail,
     password,
   });
@@ -65,13 +65,16 @@ export async function signInAction(
     return { error: error.message };
   }
 
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
 
-  const redirectPath = getSafeRedirectPath(
+  const role = data.user?.user_metadata?.role;
+  const defaultRedirect = role === "lawyer" ? "/dashboard/avocat" : "/dashboard/reservations";
+  const finalRedirect = getSafeRedirectPath(
     typeof nextPath === "string" ? nextPath : undefined,
+    defaultRedirect,
   );
 
-  redirect(redirectPath);
+  redirect(finalRedirect);
 }
 
 export async function signUpAction(
@@ -81,32 +84,53 @@ export async function signUpAction(
   const email = formData.get("email");
   const password = formData.get("password");
   const nextPath = formData.get("next");
+  const fullNameRaw = formData.get("full_name");
+  const roleRaw = formData.get("role");
 
   if (typeof email !== "string" || typeof password !== "string") {
-    return { error: "Veuillez fournir un email et un mot de passe valides." };
+    return { error: "Veuillez fournir un e-mail et un mot de passe valides." };
   }
 
   const normalizedEmail = email.trim().toLowerCase();
 
   if (!normalizedEmail) {
-    return { error: "Veuillez fournir un email et un mot de passe valides." };
+    return { error: "Veuillez fournir un e-mail et un mot de passe valides." };
   }
 
   if (password.length < 8) {
-    return { error: "Le mot de passe doit contenir au moins 8 caracteres." };
+    return { error: "Le mot de passe doit contenir au moins 8 caractères." };
   }
+
+  const role =
+    roleRaw === "lawyer" || roleRaw === "client" ? roleRaw : null;
+  if (!role) {
+    return { error: "Veuillez choisir un profil (client ou avocat)." };
+  }
+
+  const fullName =
+    typeof fullNameRaw === "string" && fullNameRaw.trim().length > 0
+      ? fullNameRaw.trim()
+      : null;
 
   const supabase = await createClient();
 
+  const defaultRedirect = role === "lawyer" ? "/dashboard/avocat" : "/dashboard/reservations";
   const redirectPath = getSafeRedirectPath(
     typeof nextPath === "string" ? nextPath : undefined,
+    defaultRedirect,
   );
 
-  const { error } = await supabase.auth.signUp({
+  const userMetadata: Record<string, string> = { role };
+  if (fullName) {
+    userMetadata.full_name = fullName;
+  }
+
+  const { data, error } = await supabase.auth.signUp({
     email: normalizedEmail,
     password,
     options: {
       emailRedirectTo: createAuthCallbackUrl(getBaseUrl(), redirectPath),
+      data: userMetadata,
     },
   });
 
@@ -114,9 +138,16 @@ export async function signUpAction(
     return { error: error.message };
   }
 
+  if (data.user && role === "lawyer") {
+    const fullNameFallback = fullName ?? normalizedEmail.split("@")[0] ?? "Avocat";
+    await supabase
+      .from("lawyer_profiles")
+      .insert({ user_id: data.user.id, nom: fullNameFallback });
+  }
+
   return {
     success:
-      "Compte cree. Verifiez votre boite mail pour confirmer votre inscription.",
+      "Compte créé. Vérifiez votre boîte mail pour confirmer votre inscription.",
   };
 }
 
@@ -124,6 +155,70 @@ export async function signOutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/login");
+}
+
+const RESET_SUCCESS =
+  "Si un compte correspond à cette adresse, un e-mail avec un lien de réinitialisation vient d’être envoyé.";
+
+export async function requestPasswordResetAction(
+  _: ActionResult,
+  formData: FormData,
+): Promise<ActionResult> {
+  const email = formData.get("email");
+
+  if (typeof email !== "string" || !email.trim()) {
+    return { error: "Veuillez saisir une adresse e-mail valide." };
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const supabase = await createClient();
+  const next = encodeURIComponent("/auth/reset-password");
+  const redirectTo = `${getBaseUrl()}/auth/callback?next=${next}`;
+
+  await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+    redirectTo,
+  });
+
+  return { success: RESET_SUCCESS };
+}
+
+export async function updatePasswordAction(
+  _: ActionResult,
+  formData: FormData,
+): Promise<ActionResult> {
+  const password = formData.get("password");
+  const confirm = formData.get("confirm_password");
+
+  if (typeof password !== "string" || typeof confirm !== "string") {
+    return { error: "Mot de passe invalide." };
+  }
+
+  if (password.length < 8) {
+    return { error: "Le mot de passe doit contenir au moins 8 caractères." };
+  }
+
+  if (password !== confirm) {
+    return { error: "Les mots de passe ne correspondent pas." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "Session expirée. Ouvrez à nouveau le lien reçu par e-mail." };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard", "layout");
+  redirect("/dashboard/reservations");
 }
 
 export async function createConsultationAction(
@@ -139,15 +234,25 @@ export async function createConsultationAction(
     typeof dateConsultation !== "string" ||
     !(file instanceof File)
   ) {
-    return { error: "Veuillez completer tous les champs requis." };
+    return { error: "Veuillez compléter tous les champs requis." };
+  }
+
+  if (!avocatId.trim()) {
+    return { error: "Veuillez sélectionner un avocat." };
   }
 
   if (!file.name.toLowerCase().endsWith(".pdf")) {
-    return { error: "Seuls les fichiers PDF sont autorises." };
+    return { error: "Seuls les fichiers PDF sont autorisés." };
   }
 
   if (file.type && file.type !== "application/pdf") {
-    return { error: "Le fichier doit etre un PDF valide." };
+    return { error: "Le fichier doit être un PDF valide." };
+  }
+
+  if (file.size > MAX_CONSULTATION_PDF_BYTES) {
+    return {
+      error: `Le fichier dépasse la taille maximale autorisée (${MAX_CONSULTATION_PDF_BYTES / (1024 * 1024)} Mo).`,
+    };
   }
 
   const supabase = await createClient();
@@ -198,7 +303,7 @@ export async function createConsultationAction(
     return { error: insertError.message };
   }
 
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
 
-  return { success: "Consultation creee avec succes." };
+  return { success: "Consultation créée avec succès." };
 }

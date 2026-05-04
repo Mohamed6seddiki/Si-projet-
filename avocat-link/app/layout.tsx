@@ -1,22 +1,16 @@
 import type { Metadata } from "next";
-import { Manrope, Newsreader } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const headlineFont = Newsreader({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-newsreader",
-  weight: ["400", "600", "700"],
-});
-
-const bodyFont = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
   title: "Avocat-Link",
   description:
-    "Plateforme de consultations juridiques securisee pour connecter clients et avocats.",
+    "Plateforme de consultations juridiques sécurisée pour connecter clients et avocats.",
 };
 
 export default function RootLayout({
@@ -25,10 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="fr"
-      className={`${headlineFont.variable} ${bodyFont.variable} h-full antialiased`}
-    >
+    <html lang="fr" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

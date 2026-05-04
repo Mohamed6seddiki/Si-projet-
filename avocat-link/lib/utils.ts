@@ -11,8 +11,8 @@ export function getStatusLabel(status: "pending" | "accepted" | "completed") {
   }
 
   if (status === "accepted") {
-    return "Acceptee";
+    return "Acceptée";
   }
 
-  return "Terminee";
+  return "Terminée";
 }

@@ -37,7 +37,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isAuthPath = path === "/login";
+  const isAuthPath = path === "/login" || path === "/auth/forgot-password";
   const isProtectedPath = path.startsWith("/dashboard");
 
   if (!user && isProtectedPath) {
@@ -52,7 +52,8 @@ export async function updateSession(request: NextRequest) {
 
   if (user && isAuthPath) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/dashboard";
+    const role = user.user_metadata?.role;
+    redirectUrl.pathname = role === "lawyer" ? "/dashboard/avocat" : "/dashboard/reservations";
     redirectUrl.search = "";
     return NextResponse.redirect(redirectUrl);
   }

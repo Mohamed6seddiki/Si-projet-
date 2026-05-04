@@ -3,18 +3,21 @@ export type Database = {
     Tables: {
       avocats: {
         Row: {
+          avatar_url: string | null;
           created_at: string;
           id: string;
           nom: string;
           specialite: string;
         };
         Insert: {
+          avatar_url?: string | null;
           created_at?: string;
           id?: string;
           nom: string;
           specialite: string;
         };
         Update: {
+          avatar_url?: string | null;
           created_at?: string;
           id?: string;
           nom?: string;
@@ -25,6 +28,7 @@ export type Database = {
       consultations: {
         Row: {
           avocat_id: string;
+          avocat_user_id: string | null;
           client_id: string;
           created_at: string;
           date_consultation: string;
@@ -34,6 +38,7 @@ export type Database = {
         };
         Insert: {
           avocat_id: string;
+          avocat_user_id?: string | null;
           client_id: string;
           created_at?: string;
           date_consultation: string;
@@ -43,6 +48,7 @@ export type Database = {
         };
         Update: {
           avocat_id?: string;
+          avocat_user_id?: string | null;
           client_id?: string;
           created_at?: string;
           date_consultation?: string;
@@ -62,6 +68,38 @@ export type Database = {
             columns: ["client_id"];
             foreignKeyName: "consultations_client_id_fkey";
             isOneToOne: false;
+            referencedColumns: ["id"];
+            referencedRelation: "users";
+          },
+        ];
+      };
+      lawyer_profiles: {
+        Row: {
+          avatar_url: string | null;
+          created_at: string;
+          nom: string;
+          specialite: string | null;
+          user_id: string;
+        };
+        Insert: {
+          avatar_url?: string | null;
+          created_at?: string;
+          nom: string;
+          specialite?: string | null;
+          user_id: string;
+        };
+        Update: {
+          avatar_url?: string | null;
+          created_at?: string;
+          nom?: string;
+          specialite?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            columns: ["user_id"];
+            foreignKeyName: "lawyer_profiles_user_id_fkey";
+            isOneToOne: true;
             referencedColumns: ["id"];
             referencedRelation: "users";
           },

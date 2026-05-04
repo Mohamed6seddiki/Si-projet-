@@ -1,4 +1,4 @@
-const DEFAULT_REDIRECT_PATH = "/dashboard";
+const DEFAULT_REDIRECT_PATH = "/dashboard/reservations";
 const INTERNAL_BASE_URL = "http://localhost";
 
 export function getSafeRedirectPath(

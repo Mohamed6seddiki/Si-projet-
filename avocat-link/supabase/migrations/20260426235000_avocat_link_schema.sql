@@ -4,6 +4,7 @@ create table if not exists public.avocats (
   id uuid primary key default gen_random_uuid(),
   nom text not null,
   specialite text not null,
+  avatar_url text,
   created_at timestamptz not null default now()
 );
 
@@ -60,12 +61,12 @@ create policy "Clients can delete own consultations"
   to authenticated
   using (auth.uid() = client_id);
 
-insert into public.avocats (nom, specialite)
+insert into public.avocats (nom, specialite, avatar_url)
 values
-  ('Maitre Salma Idrissi', 'Droit des affaires'),
-  ('Maitre Youssef Bennani', 'Droit de la famille'),
-  ('Maitre Lina El Mansouri', 'Droit immobilier'),
-  ('Maitre Karim Chraibi', 'Droit du travail')
+  ('Maitre Salma Idrissi', 'Droit des affaires', '/avocats/maitre-salma-idrissi.png'),
+  ('Maitre Youssef Bennani', 'Droit de la famille', null),
+  ('Maitre Lina El Mansouri', 'Droit immobilier', '/avocats/maitre-lina-el-mansouri.png'),
+  ('Maitre Karim Chraibi', 'Droit du travail', null)
 on conflict do nothing;
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

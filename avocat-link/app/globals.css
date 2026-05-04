@@ -1,40 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fcf9f4;
-  --foreground: #1c1c19;
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --surface: #ffffff;
-  --surface-muted: #f0ede8;
-  --surface-subtle: #ebe8e3;
-  --primary: #041627;
-  --primary-soft: #1a2b3c;
-  --secondary: #236868;
-  --secondary-soft: #aceeee;
-  --outline: #c4c6cd;
-  --error: #ba1a1a;
+  --surface-muted: #f1f5f9;
+  --surface-subtle: #e2e8f0;
+  --primary: #0f172a;
+  --primary-soft: #1e293b;
+  --accent: #dbeafe;
+  --accent-strong: #2563eb;
+  --secondary: #2563eb;
+  --secondary-soft: #bfdbfe;
+  --outline: #e2e8f0;
+  --error: #dc2626;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-manrope);
-  --font-serif: var(--font-newsreader);
+  --font-sans: var(--font-inter);
 }
 
 body {
-  background:
-    radial-gradient(circle at 10% 10%, #ffffff 0%, transparent 40%),
-    radial-gradient(circle at 90% 0%, #e8f7f7 0%, transparent 35%),
-    var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-manrope), sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* subtle radial texture for depth */
+  background-image: radial-gradient(circle at 10% 10%, rgba(99,102,241,0.03) 0%, transparent 30%), radial-gradient(circle at 90% 0%, rgba(2,6,23,0.02) 0%, transparent 25%);
+  background-repeat: no-repeat;
+}
+
+/* improve focus visibility for interactive elements globally */
+:where(a,button,input,textarea):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+  border-radius: 0.5rem;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-newsreader), serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 input,
