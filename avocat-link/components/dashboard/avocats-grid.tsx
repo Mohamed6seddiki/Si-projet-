@@ -53,6 +53,7 @@ export function AvocatsGrid({ avocats }: { avocats: Avocat[] }) {
                   className="object-cover"
                 />
               ) : avocat.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={avocat.avatar_url}
                   alt={`Portrait de ${avocat.nom}`}

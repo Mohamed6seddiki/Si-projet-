@@ -237,6 +237,7 @@ export function BookingWorkflow({ avocats, initialAvocatId = null }: Props) {
                       className="object-cover"
                     />
                   ) : selectedAvocat.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={selectedAvocat.avatar_url}
                       alt={`Portrait de ${selectedAvocat.nom}`}
@@ -277,6 +278,7 @@ export function BookingWorkflow({ avocats, initialAvocatId = null }: Props) {
                           className="object-cover"
                         />
                       ) : a.avatar_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={a.avatar_url}
                           alt={`Portrait de ${a.nom}`}
