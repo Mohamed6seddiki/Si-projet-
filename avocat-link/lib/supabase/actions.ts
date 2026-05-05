@@ -94,13 +94,29 @@ export async function signInAction(
   revalidatePath("/dashboard", "layout");
 
   const role = data.user?.user_metadata?.role;
-  const defaultRedirect = isLawyerRole(role)
+  let isAvocat = isLawyerRole(role);
+  if (!isAvocat && data.user) {
+    const { data: avocatData } = await supabase
+      .from("avocats")
+      .select("id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+    if (avocatData) {
+      isAvocat = true;
+    }
+  }
+
+  const defaultRedirect = isAvocat
     ? "/dashboard/avocat"
     : "/dashboard/reservations";
-  const finalRedirect = getSafeRedirectPath(
+  let finalRedirect = getSafeRedirectPath(
     typeof nextPath === "string" ? nextPath : undefined,
     defaultRedirect,
   );
+
+  if (isAvocat && (finalRedirect === "/dashboard/reservations" || finalRedirect === "/dashboard")) {
+    finalRedirect = "/dashboard/avocat";
+  }
 
   redirect(finalRedirect);
 }
@@ -147,10 +163,14 @@ export async function signUpAction(
   const supabase = await createClient();
 
   const defaultRedirect = role === "avocat" ? "/dashboard/avocat" : "/dashboard/reservations";
-  const redirectPath = getSafeRedirectPath(
+  let redirectPath = getSafeRedirectPath(
     typeof nextPath === "string" ? nextPath : undefined,
     defaultRedirect,
   );
+
+  if (role === "avocat" && (redirectPath === "/dashboard/reservations" || redirectPath === "/dashboard")) {
+    redirectPath = "/dashboard/avocat";
+  }
 
   const userMetadata: Record<string, string> = { role };
   if (fullName) {

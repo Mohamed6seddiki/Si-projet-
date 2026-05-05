@@ -7,21 +7,22 @@ import { SignOutButton } from "@/components/dashboard/sign-out-button";
 
 type Props = {
   userEmail: string;
+  isAvocat?: boolean;
 };
 
 function navClass(active: boolean) {
   return active
-    ? "border-b-2 border-[var(--primary)] pb-1 text-sm font-semibold text-[var(--primary)]"
-    : "pb-1 text-sm font-medium text-slate-600 transition hover:text-[var(--primary)]";
+    ? "border-b-2 border-indigo-600 pb-1 text-sm font-semibold text-indigo-700"
+    : "pb-1 text-sm font-medium text-slate-600 transition hover:text-indigo-600";
 }
 
 function mobileClass(active: boolean) {
   return active
-    ? "shrink-0 rounded-lg bg-slate-100 px-3 py-2 text-[var(--primary)]"
+    ? "shrink-0 rounded-lg bg-indigo-50 px-3 py-2 text-indigo-700 font-semibold"
     : "shrink-0 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50";
 }
 
-export function AppTopNav({ userEmail }: Props) {
+export function AppTopNav({ userEmail, isAvocat = false }: Props) {
   const pathname = usePathname();
   const initial = userEmail.trim().charAt(0).toUpperCase() || "?";
 
@@ -36,40 +37,36 @@ export function AppTopNav({ userEmail }: Props) {
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md supports-backdrop-filter:bg-white/80">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <Link
-            href="/dashboard/reservations"
-            className="shrink-0 text-lg font-bold tracking-tight text-(--primary)"
+            href={isAvocat ? "/dashboard/avocat" : "/dashboard/reservations"}
+            className="shrink-0 text-lg font-bold tracking-tight text-indigo-900"
           >
             Avocat-Link
           </Link>
 
-          {isAvocatSpace ? (
-            <nav
-              className="hidden flex-1 items-center justify-center gap-8 md:flex"
-              aria-label="Navigation principale"
-            >
-              <Link href="/dashboard/avocat" className={navClass(isAvocatSpace)}>
-                Consultations
+          <nav
+            className="hidden flex-1 items-center justify-center gap-8 md:flex"
+            aria-label="Navigation principale"
+          >
+            {isAvocat && (
+              <Link href="/dashboard/avocat" className={navClass(isAvocatSpace && !isAvocats)}>
+                Espace Avocat
               </Link>
-              <Link href="/dashboard/reservations" className={navClass(pathname === "/dashboard/reservations")}>
-                Réserver
-              </Link>
-            </nav>
-          ) : (
-            <nav
-              className="hidden flex-1 items-center justify-center gap-8 md:flex"
-              aria-label="Navigation principale"
-            >
-              <Link href="/dashboard/reservations" className={navClass(isReservations)}>
-                Réservations
-              </Link>
-              <Link href="/dashboard/avocats" className={navClass(isAvocats)}>
-                Annuaire
-              </Link>
-              <Link href="/dashboard/historique" className={navClass(isHistorique)}>
-                Historique
-              </Link>
-            </nav>
-          )}
+            )}
+            {
+              !isAvocat && (
+                <>
+                  <Link href="/dashboard/reservations" className={navClass(isReservations)}>
+                    Réservations
+                  </Link>
+
+                  <Link href="/dashboard/historique" className={navClass(isHistorique)}>
+                    Historique
+                  </Link>
+                </>
+              )
+            }
+
+          </nav>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <button
@@ -103,37 +100,25 @@ export function AppTopNav({ userEmail }: Props) {
         </div>
       </header>
       <div className="border-b border-slate-200 bg-white md:hidden">
-        {isAvocatSpace ? (
-          <nav
-            className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 py-2 text-sm font-medium"
-            aria-label="Navigation mobile"
-          >
-            <Link href="/dashboard/avocat" className={mobileClass(isAvocatSpace)}>
-              Consultations
+        <nav
+          className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 py-2 text-sm font-medium"
+          aria-label="Navigation mobile"
+        >
+          {isAvocat && (
+            <Link href="/dashboard/avocat" className={mobileClass(isAvocatSpace && !isAvocats)}>
+              Espace Avocat
             </Link>
-            <Link
-              href="/dashboard/reservations"
-              className={mobileClass(pathname === "/dashboard/reservations")}
-            >
-              Réserver
-            </Link>
-          </nav>
-        ) : (
-          <nav
-            className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 py-2 text-sm font-medium"
-            aria-label="Navigation mobile"
-          >
-            <Link href="/dashboard/reservations" className={mobileClass(isReservations)}>
-              Réservations
-            </Link>
-            <Link href="/dashboard/avocats" className={mobileClass(isAvocats)}>
-              Annuaire
-            </Link>
-            <Link href="/dashboard/historique" className={mobileClass(isHistorique)}>
-              Historique
-            </Link>
-          </nav>
-        )}
+          )}
+          <Link href="/dashboard/reservations" className={mobileClass(isReservations)}>
+            Réservations
+          </Link>
+          <Link href="/dashboard/avocats" className={mobileClass(isAvocats)}>
+            Annuaire
+          </Link>
+          <Link href="/dashboard/historique" className={mobileClass(isHistorique)}>
+            Historique
+          </Link>
+        </nav>
       </div>
     </>
   );

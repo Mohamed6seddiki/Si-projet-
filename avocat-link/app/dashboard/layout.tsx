@@ -1,5 +1,6 @@
 import { AppTopNav } from "@/components/dashboard/app-top-nav";
 import { getCurrentUser } from "@/lib/supabase/queries";
+import { createClient } from "@/lib/supabase/server";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -8,6 +9,22 @@ type DashboardLayoutProps = {
 export default async function DashboardLayout({ children }: DashboardLayoutProps) {
   const user = await getCurrentUser();
   const userEmail = user?.email ?? "Visiteur";
+  
+  let isAvocat = false;
+  if (user) {
+    const role = user.user_metadata?.role;
+    isAvocat = role === "avocat" || role === "lawyer";
+    
+    if (!isAvocat) {
+      const supabase = await createClient();
+      const { data } = await supabase
+        .from("avocats")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (data) isAvocat = true;
+    }
+  }
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background">
@@ -22,7 +39,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         Aller au contenu
       </a>
 
-      <AppTopNav userEmail={userEmail} />
+      <AppTopNav userEmail={userEmail} isAvocat={isAvocat} />
 
       <main
         id="dashboard-main"
